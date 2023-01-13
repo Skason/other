@@ -1,0 +1,70 @@
+#Настройка master-slave
+# Добавляем в конфигурацию MySQL на master
+sudo nano /etc/mysql/my.cnf
+[mysqld]
+server-id = 1 #ID сервера MASTER
+log_bin = /var/log/mysql/mysql-bin.log #Путь к бинарному логу
+binlog_do_db = sakila #Название базы для реплицирования
+# Перезапускаем MySQL
+sudo systemctl restart mysql.service
+# Заходим под пользователем root, создаем пользователя и даем права на репликацию.
+mysql -u root -p
+CREATE USER 'replication'@'%'; #Создание пользователя без пароля
+GRANT REPLICATION SLAVE ON *.* TO 'replication'@'%'; #Задаем на пользователя права для репликации
+USE sakila; #Выбираем БД 
+FLUSH TABLES WITH READ LOCK; #Блокируем
+SHOW MASTER STATUS; #Здесь необходимо запомнить название File и Position
+mysqldump -u root -p sakila > sakila.sql #Делаем дамп (bash) БД sakila
+UNLOCK TABLES; #Разблокируем таблицы
+# Настраиваем slave
+CREATE DATABASE sakila; #Создание базы
+mysql -u root -p slave < slave.sql Перенос дампа БД sakila на slave
+# Добавляем в конфигурацию MySQL на slave
+[mysqld]
+server-id = 2 #ID сервера SLAVE
+log_bin = /var/log/mysql/mysql-bin.log #Путь к бинарному логу
+relay-log = /var/log/mysql/mysql-relay-bin.log #Путь к релей логу
+binlog_do_db = sakila #Название базы для реплицирования
+# Запускаем slave
+CHANGE MASTER TO MASTER_HOST='192.168.0.1',MASTER_USER='replication', MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS = 111; #Делаем запрос в MySQL
+START SLAVE;
+SHOW SLAVE STATUS\G #Проверяем работу реплики
+
+# Настройка master-master
+# Master1 192.168.0.1
+# Master2 192.168.0.2
+# Настройка master1
+sudo nano /etc/mysql/my.cnf
+# Копируем в my.cnf
+[mysqld]
+server-id = 1
+log_bin = /var/log/mysql/mysql-bin.log
+binlog_do_db = first
+bind-address = 192.168.0.1
+# Перезагружаем сервис
+sudo systemctl restart mysql.service
+# Создание пользователя для репликации в MySQl
+CREATE USER 'replication'@'%';
+GRANT REPLICATION SLAVE ON *.* TO 'replication'@'%';
+SHOW MASTER STATUS; #Проверка репликации
+# Настройка master2
+# Копируем в my.cnf
+[mysqld]
+server-id = 2
+log_bin = /var/log/mysql/mysql-bin.log
+binlog_do_db = first
+bind-address = 192.168.0.2
+# Перезагружаем сервис
+sudo systemctl restart mysql.service
+# Создание базы и пользователя в MySQL
+CREATE DATABASE first;
+CREATE USER 'replication'@'%';
+GRANT REPLICATION SLAVE ON *.* TO 'replication'@'%';
+# Включение репликации на master2
+STOP SLAVE;
+CHANGE MASTER TO MASTER_HOST = '192.168.0.1', MASTER_USER = 'replication', MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS = 111;
+START SLAVE;
+# Включение репликации на master1
+STOP SLAVE;
+CHANGE MASTER TO MASTER_HOST = '192.168.0.2', MASTER_USER = 'replication', MASTER_LOG_FILE = 'mysql-bin.000001', MASTER_LOG_POS = 222;
+START SLAVE;
