@@ -1,0 +1,64 @@
+#node-1
+  #interfaces
+auto lo
+iface lo inet loopback
+
+auto enp0s3
+iface enp0s3 inet static
+        address 192.168.10.1
+        netmask 255.255.255.0
+auto enp0s8
+iface enp0s8 inet static
+        address 192.168.11.1
+        netmask 255.255.255.0
+auto enp0s9
+iface enp0s9 inet dhcp
+  #keepalived.conf
+state MASTER
+interface enp0s3
+virtual_router_id 10
+priority 110
+advert_int 4
+authentication {
+auth_type AH
+auth_pass 12345678
+}
+unicast_peer {
+192.168.10.1
+}
+        virtual_ipaddress {
+        192.168.10.200 dev enp0s3 label enp0s3:vip
+}
+}
+
+#node-2
+  #interfaces
+auto lo
+iface lo inet loopback
+
+auto enp0s3
+iface enp0s3 inet static
+        address 192.168.10.2
+        netmask 255.255.255.0
+auto enp0s8
+iface enp0s8 inet static
+        address 192.168.11.2
+        netmask 255.255.255.0
+auto enp0s9
+  #keepalived.conf
+state BACKUP
+interface enp0s3
+virtual_router_id 10
+priority 110
+advert_int 4
+authentication {
+auth_type AH
+auth_pass 12345678
+}
+unicast_peer {
+192.168.10.2
+}
+        virtual_ipaddress {
+        192.168.10.200 dev enp0s3 label enp0s3:vip
+}
+}
