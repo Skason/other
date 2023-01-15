@@ -24,7 +24,7 @@ auth_type AH
 auth_pass 12345678
 }
 unicast_peer {
-192.168.10.1
+192.168.10.2
 }
         virtual_ipaddress {
         192.168.10.200 dev enp0s3 label enp0s3:vip
@@ -56,7 +56,7 @@ auth_type AH
 auth_pass 12345678
 }
 unicast_peer {
-192.168.10.2
+192.168.10.3
 }
         virtual_ipaddress {
         192.168.10.200 dev enp0s3 label enp0s3:vip
