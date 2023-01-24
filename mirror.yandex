@@ -1,0 +1,6 @@
+# Зеркало yandex
+https://mirror.yandex.ru/
+
+#Установка elastic 7 из зеркала yandex
+echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | tee /etc/apt/sources.list.d/elasticrepo.list
+sudo apt update $$ apt install elasticsearch
