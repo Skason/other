@@ -5,3 +5,7 @@ https://mirror.yandex.ru/
 echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main" | tee /etc/apt/sources.list.d/elasticrepo.list
 apt update
 apt install elasticsearch
+
+#Установка kibana 7
+wget https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.17.1-amd64.deb
+sudo dpkg -i kibana-7.17.8-amd64.deb
