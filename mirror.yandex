@@ -10,6 +10,6 @@ apt install elasticsearch
 wget https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.17.1-amd64.deb
 sudo dpkg -i kibana-7.17.8-amd64.deb
 
-# Установка logstash
+# Установка logstash 7
 wget https://mirror.yandex.ru/mirrors/elastic/7/pool/main/l/logstash/logstash-7.17.1-amd64.deb
 sudo dpkg -i logstash-7.17.1-amd64.deb
