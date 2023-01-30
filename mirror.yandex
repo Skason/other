@@ -6,6 +6,10 @@ echo "deb [trusted=yes] https://mirror.yandex.ru/mirrors/elastic/7/ stable main"
 apt update
 apt install elasticsearch
 
-#Установка kibana 7
+# Установка kibana 7
 wget https://mirror.yandex.ru/mirrors/elastic/7/pool/main/k/kibana/kibana-7.17.1-amd64.deb
 sudo dpkg -i kibana-7.17.8-amd64.deb
+
+# Установка logstash
+wget https://mirror.yandex.ru/mirrors/elastic/7/pool/main/l/logstash/logstash-7.17.1-amd64.deb
+sudo dpkg -i logstash-7.17.1-amd64.deb
